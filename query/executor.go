@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"bytes"
 	"io/ioutil"
+	"errors"
+	"fmt"
 )
 
 type RequestBody struct {
@@ -15,8 +17,11 @@ type RequestBody struct {
 	SessionId string `json:"sessionId"`
 }
 
-func Execute(test *config.Test, clientAccessToken string) (*Response, error) {
-	res, err := send(test, clientAccessToken)
+func Execute(test *config.Test, clientAccessToken string, defaultLanguage string) (*Response, error) {
+	res, err := send(test, clientAccessToken, defaultLanguage)
+	if err != nil {
+		return nil, err
+	}
 	defer res.Body.Close()
 	body, err := ioutil.ReadAll(res.Body)
 	if err != nil {
@@ -30,10 +35,17 @@ func Execute(test *config.Test, clientAccessToken string) (*Response, error) {
 	return &response, nil
 }
 
-func send(test *config.Test, clientAccessToken string) (*http.Response, error) {
+func send(test *config.Test, clientAccessToken string, defaultLanguage string) (*http.Response, error) {
+	language := defaultLanguage
+	if test.Condition.Language != "" {
+		language = test.Condition.Language
+	}
+	if language == "" {
+		return nil, errors.New(fmt.Sprintf("%s language cannot be determined.", test.CreatePrefix()))
+	}
 	requestBody := RequestBody{
 		Contexts: test.Condition.Contexts,
-		Language: "ja",
+		Language: language,
 		Query: test.Condition.Query,
 		SessionId: "1",
 	}

@@ -13,7 +13,7 @@ import (
 func Execute(def *config.Definition) (*list.List, error) {
 	results := list.New()
 	for _, test := range def.Tests {
-		actual, err := query.Execute(&test, def.ClientAccessToken)
+		actual, err := query.Execute(&test, def.ClientAccessToken, def.DefaultLanguage)
 		if err != nil {
 			return nil, err
 		}
@@ -39,9 +39,9 @@ func Execute(def *config.Definition) (*list.List, error) {
 
 func displayResult(result bool) {
 	if result {
-		fmt.Print("\x1b[32m.\x1b[0m")
+		fmt.Print(".")
 	} else {
-		fmt.Print("\x1b[31mF\x1b[0m")
+		fmt.Print("F")
 	}
 }
 
@@ -49,7 +49,7 @@ func assertIntEquals(results *list.List, test *config.Test, name string, expecte
 	if expected != actual {
 		results.PushBack(
 			fmt.Sprintf("%s %s is not same. expected:%d actual:%d",
-				createPrefix(test), name, expected, actual))
+				test.CreatePrefix(), name, expected, actual))
 		return false
 	}
 	return true
@@ -59,7 +59,7 @@ func assertStringEquals(results *list.List, test *config.Test, name string, expe
 	if expected != actual {
 		results.PushBack(
 			fmt.Sprintf("%s %s is not same. expected:%s actual:%s",
-				createPrefix(test), name, expected, actual))
+				test.CreatePrefix(), name, expected, actual))
 		return false
 	}
 	return true
@@ -69,7 +69,7 @@ func assertArrayEquals(results *list.List, test *config.Test, name string, expec
 	if len(expected) != len(actual) {
 		results.PushBack(
 			fmt.Sprintf("%s The length of %s is not same. expected:%d actual:%d",
-				createPrefix(test), name, len(expected), len(actual)))
+				test.CreatePrefix(), name, len(expected), len(actual)))
 		return false
 	}
 	for _, e := range expected {
@@ -85,18 +85,10 @@ func assertByRegexp(results *list.List, test *config.Test, name string, expected
 	if !expected.Match([]byte(actual)) {
 		results.PushBack(
 			fmt.Sprintf("%s %s does not match. expected:%s actual:%s",
-				createPrefix(test), name, expected, actual))
+				test.CreatePrefix(), name, expected, actual))
 		return false
 	}
 	return true
-}
-
-func createPrefix(test *config.Test) string {
-	if test.Condition.Contexts != nil {
-		return "[" + strings.Join(test.Condition.Contexts, ",") + " " + test.Condition.Query + "]"
-	} else {
-		return "[" + test.Condition.Query + "]"
-	}
 }
 
 func contains(array []string, s string) bool {

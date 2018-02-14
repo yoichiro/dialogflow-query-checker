@@ -40,14 +40,14 @@ func main() {
 				end := time.Now()
 				if results.Len() == 0 {
 					fmt.Printf("Finished in %f seconds.\n", (end.Sub(start)).Seconds())
-					fmt.Println("\x1b[32mAll tests passed.\x1b[0m")
+					fmt.Println("All tests passed.")
 					return nil
 				} else {
 					for e := results.Front(); e != nil; e = e.Next() {
-						fmt.Println(fmt.Sprintf("\x1b[31m%s\x1b[0m", e.Value))
+						fmt.Printf("%s\n", e.Value)
 					}
 					fmt.Printf("Finished in %f seconds.\n", (end.Sub(start)).Seconds())
-					return cli.NewExitError(fmt.Sprintf("\x1b[31m%d tests failed.\x1b[0m", results.Len()), 1)
+					return cli.NewExitError(fmt.Sprintf("%d tests failed.", results.Len()), 1)
 				}
 			},
 		},

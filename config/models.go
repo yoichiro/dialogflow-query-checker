@@ -1,7 +1,10 @@
 package config
 
+import "strings"
+
 type Definition struct {
 	ClientAccessToken string `yaml:"clientAccessToken"`
+	DefaultLanguage string `yaml:"defaultLanguage"`
 	Tests []Test `yaml:"tests"`
 }
 
@@ -10,8 +13,17 @@ type Test struct {
 	Expect Expect `yaml:"expect"`
 }
 
+func (test *Test) CreatePrefix() string {
+	if test.Condition.Contexts != nil {
+		return "[" + strings.Join(test.Condition.Contexts, ",") + " " + test.Condition.Query + "]"
+	} else {
+		return "[" + test.Condition.Query + "]"
+	}
+}
+
 type Condition struct {
 	Contexts []string `yaml:"contexts"`
+	Language string `yaml:"language"`
 	Query string `yaml:"query"`
 }
 
