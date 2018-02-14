@@ -8,7 +8,7 @@ To send a query to the Dialogflow, this uses the [Dialogflow Query API](https://
 
 You can get this tool from the following page:
 
-https://github.com/yoichiro/dialogflow-query-checker/releases/tag/1.0.0
+https://github.com/yoichiro/dialogflow-query-checker/releases/latest
 
 Download the archive file named `dialogflow-query-checker-[version].zip` and extract the file to some directory where you want to install. The archive file has some executable files for each OS and Architecture.
 
