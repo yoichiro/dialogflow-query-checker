@@ -20,11 +20,13 @@ To check your intents, actions and fulfillment, you need to create a configurati
 
 ```yaml
 clientAccessToken: <CLIENT_ACCESS_TOKEN>
+defaultLanguage: <DEFAULT_LANGUAGE>
 tests:
   -
     condition:
       contexts:
         - <INPUT_CONTEXT>
+      language: <LANGUAGE>
       query: <QUERY_STRING>
     expect:
       action: <ACTION_ID>
@@ -37,9 +39,11 @@ tests:
 ```
 
 * `CLIENT_ACCESS_TOKEN` - The client access token issued by the Dialogflow. You can get the token from the project configuration page of the your Dialogflow project.
+* `DEFAULT_LANGUAGE` - This language is used, if the language value in each test definition is not specified.
 * tests - This is an array which has each test case.
   * condition - This defines the condition of the query represented by contexts and a query.
     * `INPUT_CONTEXT` - The context ID when the query sends. You can specify multiple contexts, and also can omit.
+    * `LANGUAGE` - The query language. The defaultLanguage is used when this value is omitted.
     * `QUERY_STRING` - The query string. This means "User says" in Dialogflow.
   * expect - This defines a expected result which should be returned from the Dialogflow.
     * `ACTION_ID` - The action ID determined by an intent.
@@ -59,6 +63,7 @@ The sample is like the following:
 
 ```yaml
 clientAccessToken: ...
+defaultLanguage: en
 tests:
   -
     condition:
