@@ -5,8 +5,8 @@ import (
 	"github.com/urfave/cli"
 	"fmt"
 	"time"
-	"./config"
-	"./check"
+	"github.com/yoichiro/dialogflow-query-checker/config"
+	"github.com/yoichiro/dialogflow-query-checker/check"
 )
 
 func main() {

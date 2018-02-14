@@ -1,7 +1,7 @@
 package query
 
 import (
-	"../config"
+	"github.com/yoichiro/dialogflow-query-checker/config"
 	"encoding/json"
 	"net/http"
 	"bytes"
