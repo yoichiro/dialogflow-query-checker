@@ -50,6 +50,11 @@ tests:
     * `OUTPUT_CONTEXT` - The context ID determined by the intent or the fulfillment. You can specify multiple contexts, and also can omit.
     * `SPEECH_REGULAR_EXPRESSION` - The regular expression to validate the response from the Dialogflow. 
 
+In the `PARAMETER_VALUE` and the `SPEECH_REGULAR_EXPRESSION`, you can use macros. In the latest version, the following macros are supported:
+
+* `${date.today}` - This is replaced to today's date string.
+* `${date.tomorrow}` - This is replaced to tomorrow's date string.
+
 The sample is like the following:
 
 ```yaml

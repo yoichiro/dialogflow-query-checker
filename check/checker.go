@@ -1,8 +1,8 @@
 package check
 
 import (
-	"../config"
-	"../query"
+	"github.com/yoichiro/dialogflow-query-checker/config"
+	"github.com/yoichiro/dialogflow-query-checker/query"
 	"container/list"
 	"fmt"
 	"regexp"
