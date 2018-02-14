@@ -35,7 +35,8 @@ tests:
         <PARAMETER_NAME>: <PARAMETER_VALUE>
       contexts:
         - <OUTPUT_CONTEXT>
-      speech: <SPEECH_REGULAR_EXPRESSION>
+      speeches:
+        - <SPEECH_REGULAR_EXPRESSION>
 ```
 
 * `CLIENT_ACCESS_TOKEN` - The client access token issued by the Dialogflow. You can get the token from the project configuration page of the your Dialogflow project.
@@ -78,7 +79,8 @@ tests:
         when: "2018"
       contexts:
         - "answered"
-      speech: "^The event is the (1st)|(2nd)|(3rd)|([0-9]+th).$"
+      speeches:
+        - "^The event is the (1st)|(2nd)|(3rd)|([0-9]+th).$"
 ...
 ```
 

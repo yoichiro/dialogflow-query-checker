@@ -31,8 +31,12 @@ func Execute(def *config.Definition) (*list.List, error) {
 		displayResult(assertStringEquals(results, &test,"prefecture", test.Expect.Parameters.Prefecture, actual.Result.Parameters.Prefecture))
 		displayResult(assertStringEquals(results, &test,"keyword", test.Expect.Parameters.Keyword, actual.Result.Parameters.Keyword))
 		displayResult(assertStringEquals(results, &test,"event", test.Expect.Parameters.Event, actual.Result.Parameters.Event))
-		re := regexp.MustCompile(evaluateDateMacro(test.Expect.Speech, "1月2日"))
-		displayResult(assertByRegexp(results, &test,"speech", re, actual.Result.Fulfillment.Speech))
+		if test.Expect.Speeches != nil {
+			displayResult(assertByMultipleRegexps(results, &test, "speech", test.Expect.Speeches, actual.Result.Fulfillment.Speech))
+		} else {
+			re := regexp.MustCompile(evaluateDateMacro(test.Expect.Speech, "1月2日"))
+			displayResult(assertByRegexp(results, &test,"speech", re, actual.Result.Fulfillment.Speech))
+		}
 	}
 	return results, nil
 }
@@ -89,6 +93,30 @@ func assertByRegexp(results *list.List, test *config.Test, name string, expected
 		return false
 	}
 	return true
+}
+
+func assertByMultipleRegexps(results *list.List, test *config.Test, name string, regexps []string, actual string) bool {
+	for _, exp := range regexps {
+		re := regexp.MustCompile(evaluateDateMacro(exp, "1月2日"))
+		if re.Match([]byte(actual)) {
+			return true
+		}
+	}
+	f := func(x string) string {
+		return fmt.Sprintf("\"%s\"", x)
+	}
+	results.PushBack(
+		fmt.Sprintf("%s %s does not match. expected:%s actual:%s",
+			test.CreatePrefix(), name, strings.Join(mapString(regexps, f), ", "), actual))
+	return false
+}
+
+func mapString(x []string, f func(string) string) []string {
+	r := make([]string, len(x))
+	for i, e := range x {
+		r[i] = f(e)
+	}
+	return r
 }
 
 func contains(array []string, s string) bool {
