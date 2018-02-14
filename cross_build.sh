@@ -12,4 +12,6 @@ gox \
     -os="darwin linux windows" \
     -arch="386 amd64" \
     -output "${DIST}/{{.OS}}_{{.Arch}}/{{.Dir}}"
+cp README.md "${DIST}"
+cp LICENSE "${DIST}"
 zip -r "${DIST}.zip" "${DIST}"
