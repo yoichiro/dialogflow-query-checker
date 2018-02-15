@@ -23,31 +23,36 @@ func main() {
 			Action: func(c *cli.Context) error {
 				start := time.Now()
 				if !c.Args().Present() {
-					return cli.NewExitError("A configuration file not specified", 1)
+					return cli.NewExitError("[Error] A configuration file not specified", 1)
 				}
 				path := c.Args().First()
 				def, err := config.LoadConfigurationFile(path)
 				if err != nil {
-					return cli.NewExitError(err, 1)
+					return cli.NewExitError(fmt.Sprintf("[Error] %s", err), 1)
 				}
 				fmt.Printf("The configuration file loaded: %s\n", path)
 				fmt.Println("Running query tests for Dialogflow.")
-				results, err := check.Execute(def)
+				holder, err := check.Execute(def)
 				fmt.Println()
 				if err != nil {
-					return cli.NewExitError(err, 1)
+					return cli.NewExitError(fmt.Sprintf("[Error] %s", err), 1)
 				}
 				end := time.Now()
-				if results.Len() == 0 {
+				if holder.AllAssertResultCount() == 0 {
 					fmt.Printf("Finished in %f seconds.\n", (end.Sub(start)).Seconds())
 					fmt.Println("All tests passed.")
 					return nil
 				} else {
-					for e := results.Front(); e != nil; e = e.Next() {
-						fmt.Printf("%s\n", e.Value)
+					for _, testResult := range holder.AllTestResults() {
+						fmt.Printf("%s\n", testResult.Prefix)
+						for _, assertResult := range testResult.AllAssertResults() {
+							fmt.Printf("  Failure: %s\n", assertResult.Message)
+							fmt.Printf("    Expected: %s\n", assertResult.Expected)
+							fmt.Printf("    Actual: %s\n", assertResult.Actual)
+						}
 					}
 					fmt.Printf("Finished in %f seconds.\n", (end.Sub(start)).Seconds())
-					return cli.NewExitError(fmt.Sprintf("%d tests failed.", results.Len()), 1)
+					return cli.NewExitError(fmt.Sprintf("%d tests failed.", holder.AllAssertResultCount()), 1)
 				}
 			},
 		},
