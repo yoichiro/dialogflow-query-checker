@@ -53,7 +53,7 @@ tests:
       * `PARAMETER_NAME` - The parameter's name.
       * `PARAMETER_VALUE` - The parameter's value retrieved from the query phrase.
     * `OUTPUT_CONTEXT` - The context ID determined by the intent or the fulfillment. You can specify multiple contexts, and also can omit.
-    * `SPEECH_REGULAR_EXPRESSION` - The regular expression to validate the response from the Dialogflow. 
+    * `SPEECH_REGULAR_EXPRESSION` - The regular expression to validate the response from the Dialogflow. When you specify multiple regular expressions, the test is passed if matched at least one expression. That is, the condition is OR.
 
 In the `PARAMETER_VALUE` and the `SPEECH_REGULAR_EXPRESSION`, you can use macros. In the latest version, the following macros are supported:
 
@@ -96,7 +96,10 @@ You see like the following output:
 
 ```bash
 ........F.....F........F.......
-[input_condition How many times is a Google I/O in this year?] action is not same. expected:event_info actual:event_information
+[input_condition How many times is a Google I/O in this year?]
+  Failure: action is not same.
+    Expected: event_info
+    Actual: event_information
 ...
 3 tests failed.
 ```
@@ -108,7 +111,7 @@ If all tests passed, exit status code is `0`. Otherwise, the code is `1`.
 You can build this tool by the following steps:
 
 1. Install Go language environment.
-1. `git clone git@github.com:yoichiro/dialogflow-query-checker.git`
+1. `go get -u github.com/yoichiro/dialogflow-query-checker`
 1. `go get github.com/mitchellh/gox`
 1. Change the version number written in the `verion.go` file.
 1. Run `./cross_build.sh`
