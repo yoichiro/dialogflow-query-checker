@@ -39,7 +39,7 @@ tests:
         - <SPEECH_REGULAR_EXPRESSION>
 ```
 
-* `CLIENT_ACCESS_TOKEN` - The client access token issued by the Dialogflow. You can get the token from the project configuration page of the your Dialogflow project.
+* `CLIENT_ACCESS_TOKEN` - The client access token issued by the Dialogflow. You can get the token from the project configuration page of the your Dialogflow project. You can omit this value. Instead, you need to specify this value with a `DIALOGFLOW_CLIENT_ACCESS_TOKEN` environment variable.
 * `DEFAULT_LANGUAGE` - This language is used, if the language value in each test definition is not specified.
 * tests - This is an array which has each test case.
   * condition - This defines the condition of the query represented by contexts and a query.
