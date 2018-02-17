@@ -52,14 +52,14 @@ func createTestData() *Holder {
 	testResults1 := list.New()
 	assertResults1 := list.New()
 
-	assertResults1.PushBack(NewAssertResult("message1", "expected1", "actual1"))
+	assertResults1.PushBack(NewFailureAssertResult("name1", "message1", "expected1", "actual1"))
 
 	testResult1 := NewTestResult("prefix1", assertResults1)
 	testResults1.PushBack(testResult1)
 
 	assertResults2 := list.New()
 
-	assertResults2.PushBack(NewAssertResult("message2", "expected2", "actual2"))
+	assertResults2.PushBack(NewFailureAssertResult("name2", "message2", "expected2", "actual2"))
 
 	testResult2 := NewTestResult("prefix2", assertResults2)
 	testResults1.PushBack(testResult2)
