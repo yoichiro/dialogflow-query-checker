@@ -106,6 +106,63 @@ You see like the following output:
 
 If all tests passed, exit status code is `0`. Otherwise, the code is `1`.
 
+### Output test results with a JUnit XML format
+
+You can output test results with a JUnit XML format using `--output` or `-o` option as the following:
+
+```bash
+$ dialogflow-query-checker run --output <OUTPUT_FILE_PATH> <CONFIGURATION_FILE_PATH>
+``` 
+
+By using this option, you can integrate this tool for some services like CircleCI, TravisCI and so on.
+For example, when you use the CircleCI, you can use this tool like the following:
+
+1. Put the `dialogflow-query-checker` executable binary file into a `bin` directory of your project.
+1. Create your configuration YAML file and put it into your project.
+1. Create `.circleci/config.yml` file like the following:
+
+```yaml
+version: 2
+jobs:
+  test:
+    docker:
+      - image: ubuntu
+    steps:
+      - run:
+          name: Update apt-get
+          command: apt-get update
+      - run:
+          name: Install ca-certificates
+          command: apt-get install -y ca-certificates
+      - checkout
+      - run:
+          name: dialogflow-query-checker
+          command: |
+            mkdir -p ~/repo/dialogflow-query-checker
+            bin/dialogflow-query-checker run -o ~/repo/dialogflow-query-checker/test_result.xml your_config_fileyml
+      - store_test_results:
+          path: ~/repo
+      - store_artifacts:
+          path: ~/repo
+workflows:
+  version: 2
+  commit:
+    jobs:
+      - test
+  nightly:
+    triggers:
+      - schedule:
+          cron: "0 0 * * *"
+          filters:
+            branches:
+              only:
+                - master
+    jobs:
+      - test
+```
+
+You will see the integrated test summary information on your CircleCI project after steps above.
+
 ## For developers
 
 You can build this tool by the following steps:

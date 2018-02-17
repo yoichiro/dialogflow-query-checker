@@ -15,9 +15,9 @@ type Test struct {
 
 func (test *Test) CreatePrefix() string {
 	if test.Condition.Contexts != nil {
-		return "[" + strings.Join(test.Condition.Contexts, ",") + " " + test.Condition.Query + "]"
+		return strings.Join(test.Condition.Contexts, ",") + " " + test.Condition.Query
 	} else {
-		return "[" + test.Condition.Query + "]"
+		return test.Condition.Query
 	}
 }
 

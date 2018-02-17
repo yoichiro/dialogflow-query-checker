@@ -7,6 +7,7 @@ import (
 	"time"
 	"github.com/yoichiro/dialogflow-query-checker/config"
 	"github.com/yoichiro/dialogflow-query-checker/check"
+	"github.com/yoichiro/dialogflow-query-checker/output"
 )
 
 func main() {
@@ -19,8 +20,15 @@ func main() {
 		{
 			Name: "run",
 			Usage: "Execute posting each query and checking it based on a configuration file",
+			Flags: []cli.Flag{
+				cli.StringFlag{
+					Name: "output, o",
+					Usage: "Output results as JUnit XML format `FILE`",
+				},
+			},
 			ArgsUsage: "[configuration file] A configuration YAML file which has conditions and expected query results",
 			Action: func(c *cli.Context) error {
+				fmt.Printf("%s version %s\n", app.Name, app.Version)
 				start := time.Now()
 				if !c.Args().Present() {
 					return cli.NewExitError("[Error] A configuration file not specified", 1)
@@ -38,21 +46,22 @@ func main() {
 					return cli.NewExitError(fmt.Sprintf("[Error] %s", err), 1)
 				}
 				end := time.Now()
-				if holder.AllAssertResultCount() == 0 {
-					fmt.Printf("Finished in %f seconds.\n", (end.Sub(start)).Seconds())
-					fmt.Println("All tests passed.")
+				output.Standard(holder, start, end)
+				if c.String("output") != "" {
+					err = output.JunitXml(holder, c.String("output"), start, end)
+					if err != nil {
+						return cli.NewExitError(fmt.Sprintf("[Error] %s", err), 1)
+					}
+				}
+				if holder.AllFailureAssertResultCount() == 0 {
 					return nil
 				} else {
-					for _, testResult := range holder.AllTestResults() {
-						fmt.Printf("%s\n", testResult.Prefix)
-						for _, assertResult := range testResult.AllAssertResults() {
-							fmt.Printf("  Failure: %s\n", assertResult.Message)
-							fmt.Printf("    Expected: %s\n", assertResult.Expected)
-							fmt.Printf("    Actual: %s\n", assertResult.Actual)
-						}
+					failureTestResultCount := holder.AllFailureTestResultCount()
+					if failureTestResultCount == 1 {
+						return cli.NewExitError(fmt.Sprint("1 test failed.", ), 1)
+					} else {
+						return cli.NewExitError(fmt.Sprintf("%d tests failed.", failureTestResultCount), 1)
 					}
-					fmt.Printf("Finished in %f seconds.\n", (end.Sub(start)).Seconds())
-					return cli.NewExitError(fmt.Sprintf("%d tests failed.", holder.AllAssertResultCount()), 1)
 				}
 			},
 		},

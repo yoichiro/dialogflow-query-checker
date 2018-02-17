@@ -14,6 +14,8 @@ import (
 func Execute(def *config.Definition) (*Holder, error) {
 	results := list.New()
 	for _, test := range def.Tests {
+		start := time.Now()
+
 		assertResults := list.New()
 
 		actual, err := query.Execute(&test, def.ClientAccessToken, def.DefaultLanguage)
@@ -21,97 +23,91 @@ func Execute(def *config.Definition) (*Holder, error) {
 			return nil, err
 		}
 
-		displayResult(assertIntEquals(assertResults, "status.code", 200, actual.Status.Code))
-		displayResult(assertStringEquals(assertResults, "action", test.Expect.Action, actual.Result.Action))
-		displayResult(assertStringEquals(assertResults, "intentName", test.Expect.IntentName, actual.Result.Metadata.IntentName))
+		displayResult(assertResults, assertIntEquals("status.code", 200, actual.Status.Code))
+		displayResult(assertResults, assertStringEquals("action", test.Expect.Action, actual.Result.Action))
+		displayResult(assertResults, assertStringEquals("intentName", test.Expect.IntentName, actual.Result.Metadata.IntentName))
 		actualContexts := make([]string, len(actual.Result.Contexts))
 		for i, context := range actual.Result.Contexts {
 			actualContexts[i] = context.Name
 		}
 		if test.Expect.Contexts != nil {
-			displayResult(assertArrayEquals(assertResults, "contexts", test.Expect.Contexts, actualContexts))
+			displayResult(results, assertArrayEquals("contexts", test.Expect.Contexts, actualContexts))
 		}
-		displayResult(assertStringEquals(assertResults, "date", evaluateDateMacro(test.Expect.Parameters.Date, "2006-01-02"), actual.Result.Parameters.Date))
-		displayResult(assertStringEquals(assertResults, "prefecture", test.Expect.Parameters.Prefecture, actual.Result.Parameters.Prefecture))
-		displayResult(assertStringEquals(assertResults, "keyword", test.Expect.Parameters.Keyword, actual.Result.Parameters.Keyword))
-		displayResult(assertStringEquals(assertResults, "event", test.Expect.Parameters.Event, actual.Result.Parameters.Event))
+		displayResult(assertResults, assertStringEquals("date", evaluateDateMacro(test.Expect.Parameters.Date, "2006-01-02"), actual.Result.Parameters.Date))
+		displayResult(assertResults, assertStringEquals("prefecture", test.Expect.Parameters.Prefecture, actual.Result.Parameters.Prefecture))
+		displayResult(assertResults, assertStringEquals("keyword", test.Expect.Parameters.Keyword, actual.Result.Parameters.Keyword))
+		displayResult(assertResults, assertStringEquals("event", test.Expect.Parameters.Event, actual.Result.Parameters.Event))
 		if test.Expect.Speeches != nil {
-			displayResult(assertByMultipleRegexps(assertResults,  "speech", test.Expect.Speeches, actual.Result.Fulfillment.Speech))
+			displayResult(assertResults, assertByMultipleRegexps( "speech", test.Expect.Speeches, actual.Result.Fulfillment.Speech))
 		} else {
 			re := regexp.MustCompile(evaluateDateMacro(test.Expect.Speech, "1月2日"))
-			displayResult(assertByRegexp(assertResults, "speech", re, actual.Result.Fulfillment.Speech))
+			displayResult(assertResults, assertByRegexp("speech", re, actual.Result.Fulfillment.Speech))
 		}
 
-		if assertResults.Len() > 0 {
-			results.PushBack(NewTestResult(test.CreatePrefix(), assertResults))
-		}
+		end := time.Now()
+		results.PushBack(NewTestResult(test.CreatePrefix(), (end.Sub(start)).Seconds(), assertResults))
 	}
 	return &Holder{
 		TestResults: results,
 	}, nil
 }
 
-func displayResult(result bool) {
-	if result {
+func displayResult(results *list.List, assertResult *AssertResult) {
+	if assertResult.Success {
 		fmt.Print(".")
 	} else {
 		fmt.Print("F")
 	}
+	results.PushBack(assertResult)
 }
 
-func assertIntEquals(results *list.List, name string, expected int, actual int) bool {
+func assertIntEquals(name string, expected int, actual int) *AssertResult {
 	if expected != actual {
-		results.PushBack(
-			NewAssertResult(fmt.Sprintf("%s is not same as expected value.", name), strconv.Itoa(expected), strconv.Itoa(actual)))
-		return false
+		return NewFailureAssertResult(name, fmt.Sprintf("%s is not same as expected value.", name), strconv.Itoa(expected), strconv.Itoa(actual))
+	} else {
+		return NewSuccessAssertResult(name)
 	}
-	return true
 }
 
-func assertStringEquals(results *list.List, name string, expected string, actual string) bool {
+func assertStringEquals(name string, expected string, actual string) *AssertResult {
 	if expected != actual {
-		results.PushBack(NewAssertResult(fmt.Sprintf("%s is not same as expected value.", name), expected, actual))
-		return false
+		return NewFailureAssertResult(name, fmt.Sprintf("%s is not same as expected value.", name), expected, actual)
+	} else {
+		return NewSuccessAssertResult(name)
 	}
-	return true
 }
 
-func assertArrayEquals(results *list.List, name string, expected []string, actual []string) bool {
+func assertArrayEquals(name string, expected []string, actual []string) *AssertResult {
 	if len(expected) != len(actual) {
-		results.PushBack(
-			NewAssertResult(fmt.Sprintf("The length of %s is not same as expected length.", name), strconv.Itoa(len(expected)), strconv.Itoa(len(actual))))
-		return false
+		return NewFailureAssertResult(name, fmt.Sprintf("The length of %s is not same as expected length.", name), strconv.Itoa(len(expected)), strconv.Itoa(len(actual)))
 	}
 	for _, e := range expected {
 		if !contains(actual, e) {
-			results.PushBack(
-				NewAssertResult(fmt.Sprintf("%s does not contain %s", name, e), "Contained", "Not contained"))
-			return false
+			return NewFailureAssertResult(name, fmt.Sprintf("%s does not contain %s", name, e), "Contained", "Not contained")
 		}
 	}
-	return true
+	return NewSuccessAssertResult(name)
 }
 
-func assertByRegexp(results *list.List, name string, expected *regexp.Regexp, actual string) bool {
+func assertByRegexp(name string, expected *regexp.Regexp, actual string) *AssertResult {
 	if !expected.Match([]byte(actual)) {
-		results.PushBack(NewAssertResult(fmt.Sprintf("%s is not matched to expected regular expression.", name), expected.String(), actual))
-		return false
+		return NewFailureAssertResult(name, fmt.Sprintf("%s is not matched to expected regular expression.", name), expected.String(), actual)
+	} else {
+		return NewSuccessAssertResult(name)
 	}
-	return true
 }
 
-func assertByMultipleRegexps(results *list.List, name string, regexps []string, actual string) bool {
+func assertByMultipleRegexps(name string, regexps []string, actual string) *AssertResult {
 	for _, exp := range regexps {
 		re := regexp.MustCompile(evaluateDateMacro(exp, "1月2日"))
 		if re.Match([]byte(actual)) {
-			return true
+			return NewSuccessAssertResult(name)
 		}
 	}
 	f := func(x string) string {
 		return fmt.Sprintf("\"%s\"", x)
 	}
-	results.PushBack(NewAssertResult(fmt.Sprintf("%s is not matched to expected regular expression.", name), strings.Join(mapString(regexps, f), ", "), actual))
-	return false
+	return NewFailureAssertResult(name, fmt.Sprintf("%s is not matched to expected regular expression.", name), strings.Join(mapString(regexps, f), ", "), actual)
 }
 
 func mapString(x []string, f func(string) string) []string {
