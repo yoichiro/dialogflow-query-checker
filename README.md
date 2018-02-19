@@ -28,6 +28,7 @@ tests:
         - <INPUT_CONTEXT>
       language: <LANGUAGE>
       query: <QUERY_STRING>
+      sessionId: <SESSION_ID>
     expect:
       action: <ACTION_ID>
       intentName: <INTENT_ID>
@@ -46,6 +47,7 @@ tests:
     * `INPUT_CONTEXT` - The context ID when the query sends. You can specify multiple contexts, and also can omit.
     * `LANGUAGE` - The query language. The defaultLanguage is used when this value is omitted.
     * `QUERY_STRING` - The query string. This means "User says" in Dialogflow.
+    * `SESSION_ID` - When some concrete string is specified, the value is applied as a Session ID. When the "inherit" is specified or omitted, the previous value is applied (if any concrete value was not used at the time, this tool will generate a random Session ID value). And, when the "new" is specified, the re-generated new value is applied.
   * expect - This defines a expected result which should be returned from the Dialogflow.
     * `ACTION_ID` - The action ID determined by an intent.
     * `INTENT_ID` - The intent ID guessed by the query.
