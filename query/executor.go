@@ -47,7 +47,7 @@ func send(test *config.Test, clientAccessToken string, defaultLanguage string) (
 		Contexts: test.Condition.Contexts,
 		Language: language,
 		Query: test.Condition.Query,
-		SessionId: "1",
+		SessionId: test.Condition.SessionId,
 	}
 	body, err := json.Marshal(&requestBody)
 	if err != nil {

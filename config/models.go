@@ -25,6 +25,7 @@ type Condition struct {
 	Contexts []string `yaml:"contexts"`
 	Language string `yaml:"language"`
 	Query string `yaml:"query"`
+	SessionId string `yaml:"sessionId"`
 }
 
 type Expect struct {
