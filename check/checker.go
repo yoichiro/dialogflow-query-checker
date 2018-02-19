@@ -23,7 +23,7 @@ func Execute(def *config.Definition) (*Holder, error) {
 			return nil, err
 		}
 
-		displayResult(assertResults, assertIntEquals("status.code", 200, actual.Status.Code))
+		displayResult(assertResults, assertStatus(&actual.Status))
 		displayResult(assertResults, assertStringEquals("action", test.Expect.Action, actual.Result.Action))
 		displayResult(assertResults, assertStringEquals("intentName", test.Expect.IntentName, actual.Result.Metadata.IntentName))
 		actualContexts := make([]string, len(actual.Result.Contexts))
@@ -61,11 +61,11 @@ func displayResult(results *list.List, assertResult *AssertResult) {
 	results.PushBack(assertResult)
 }
 
-func assertIntEquals(name string, expected int, actual int) *AssertResult {
-	if expected != actual {
-		return NewFailureAssertResult(name, fmt.Sprintf("%s is not same as expected value.", name), strconv.Itoa(expected), strconv.Itoa(actual))
+func assertStatus(status *query.Status) *AssertResult {
+	if status.Code != 200 {
+		return NewFailureAssertResult("status", fmt.Sprintf("status is %d, not 200. (%s: %s)", status.Code, status.ErrorType, status.ErrorDetails), strconv.Itoa(200), strconv.Itoa(status.Code))
 	} else {
-		return NewSuccessAssertResult(name)
+		return NewSuccessAssertResult("status")
 	}
 }
 

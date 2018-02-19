@@ -15,6 +15,8 @@ type Result struct {
 
 type Status struct {
 	Code int `json:"code"`
+	ErrorDetails string `json:"errorDetails"`
+	ErrorType string `json:"errorType"`
 }
 
 type Context struct {
