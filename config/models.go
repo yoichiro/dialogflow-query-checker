@@ -14,10 +14,16 @@ type Test struct {
 }
 
 func (test *Test) CreatePrefix() string {
+	var contexts string
 	if test.Condition.Contexts != nil {
-		return strings.Join(test.Condition.Contexts, ",") + " " + test.Condition.Query
+		contexts = " (" + strings.Join(test.Condition.Contexts, ",") + ")"
 	} else {
-		return test.Condition.Query
+		contexts = ""
+	}
+	if test.Condition.Query != "" {
+		return "Query: " + test.Condition.Query + contexts
+	} else {
+		return "Event: " + test.Condition.EventName + contexts
 	}
 }
 
