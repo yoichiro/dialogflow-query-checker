@@ -11,10 +11,15 @@ import (
 )
 
 type RequestBody struct {
-	Contexts []string `json:"contexts"`
+	Contexts []string `json:"contexts,omitempty"`
 	Language string `json:"lang"`
-	Query string `json:"query"`
+	Query string `json:"query,omitempty"`
+	Event Event `json:"event,omitempty"`
 	SessionId string `json:"sessionId"`
+}
+
+type Event struct {
+	Name string `json:"name,omitempty"`
 }
 
 func Execute(test *config.Test, clientAccessToken string, defaultLanguage string) (*Response, error) {
@@ -46,8 +51,14 @@ func send(test *config.Test, clientAccessToken string, defaultLanguage string) (
 	requestBody := RequestBody{
 		Contexts: test.Condition.Contexts,
 		Language: language,
-		Query: test.Condition.Query,
 		SessionId: test.Condition.SessionId,
+	}
+	if test.Condition.Query != "" {
+		requestBody.Query = test.Condition.Query
+	} else {
+		requestBody.Event = Event{
+			Name: test.Condition.EventName,
+		}
 	}
 	body, err := json.Marshal(&requestBody)
 	if err != nil {
