@@ -5,6 +5,7 @@ import "strings"
 type Definition struct {
 	ClientAccessToken string `yaml:"clientAccessToken"`
 	DefaultLanguage string `yaml:"defaultLanguage"`
+	DefaultLocale string `yaml:"defaultLocale"`
 	Tests []Test `yaml:"tests"`
 }
 
@@ -30,6 +31,7 @@ func (test *Test) CreatePrefix() string {
 type Condition struct {
 	Contexts []string `yaml:"contexts"`
 	Language string `yaml:"language"`
+	Locale string `yaml:"locale"`
 	Query string `yaml:"query"`
 	EventName string `yaml:"eventName"`
 	SessionId string `yaml:"sessionId"`

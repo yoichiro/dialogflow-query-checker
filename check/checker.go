@@ -18,7 +18,7 @@ func Execute(def *config.Definition) (*Holder, error) {
 
 		assertResults := list.New()
 
-		actual, err := query.Execute(&test, def.ClientAccessToken, def.DefaultLanguage)
+		actual, err := query.Execute(&test, def.ClientAccessToken)
 		if err != nil {
 			return nil, err
 		}
@@ -31,7 +31,7 @@ func Execute(def *config.Definition) (*Holder, error) {
 			actualContexts[i] = context.Name
 		}
 		if test.Expect.Contexts != nil {
-			displayResult(results, assertArrayEquals("contexts", test.Expect.Contexts, actualContexts))
+			displayResult(assertResults, assertArrayContains("contexts", test.Expect.Contexts, actualContexts))
 		}
 		displayResult(assertResults, assertStringEquals("date", evaluateDateMacro(test.Expect.Parameters.Date, "2006-01-02"), actual.Result.Parameters.Date))
 		displayResult(assertResults, assertStringEquals("prefecture", test.Expect.Parameters.Prefecture, actual.Result.Parameters.Prefecture))
@@ -77,10 +77,7 @@ func assertStringEquals(name string, expected string, actual string) *AssertResu
 	}
 }
 
-func assertArrayEquals(name string, expected []string, actual []string) *AssertResult {
-	if len(expected) != len(actual) {
-		return NewFailureAssertResult(name, fmt.Sprintf("The length of %s is not same as expected length.", name), strconv.Itoa(len(expected)), strconv.Itoa(len(actual)))
-	}
+func assertArrayContains(name string, expected []string, actual []string) *AssertResult {
 	for _, e := range expected {
 		if !contains(actual, e) {
 			return NewFailureAssertResult(name, fmt.Sprintf("%s does not contain %s", name, e), "Contained", "Not contained")
