@@ -21,12 +21,14 @@ To check your intents, actions and fulfillment, you need to create a configurati
 ```yaml
 clientAccessToken: <CLIENT_ACCESS_TOKEN>
 defaultLanguage: <DEFAULT_LANGUAGE>
+defaultLocale: <DEFAULT_LOCALE>
 tests:
   -
     condition:
       contexts:
         - <INPUT_CONTEXT>
       language: <LANGUAGE>
+      locale: <LOCALE>
       query: <QUERY_STRING>
       eventName: <EVENT_NAME>
       sessionId: <SESSION_ID>
@@ -42,11 +44,13 @@ tests:
 ```
 
 * `CLIENT_ACCESS_TOKEN` - The client access token issued by the Dialogflow. You can get the token from the project configuration page of the your Dialogflow project. You can omit this value. Instead, you need to specify this value with a `DIALOGFLOW_CLIENT_ACCESS_TOKEN` environment variable.
-* `DEFAULT_LANGUAGE` - This language is used, if the language value in each test definition is not specified.
+* `DEFAULT_LANGUAGE` - This language value is used, if the language value in each test definition is not specified.
+* `DEFAULT_LOCALE` - This locale value is used, if the locale value in each test definition is not specified.
 * tests - This is an array which has each test case.
   * condition - This defines the condition of the query represented by contexts and a query.
     * `INPUT_CONTEXT` - The context ID when the query sends. You can specify multiple contexts, and also can omit.
-    * `LANGUAGE` - The query language. The defaultLanguage is used when this value is omitted.
+    * `LANGUAGE` - The query language. When some concrete string is specified, the value is applied. When the "inherit" is specified or omitted, the previous value is applied (if any concrete value was not used at the time, the defaultLanguage value will be used).
+    * `LOCALE` - The user's locale. When some concrete string is specified, the value is applied. When the "inherit" is specified or omitted, the previous value is applied (if any concrete value was not used at the time, the defaultLocale value will be used).
     * `QUERY_STRING` - The query string. This means "User says" in Dialogflow. This is required when the event is omitted.
     * `EVENT_NAME` - The event name string. For example, "GOOGLE_ASSISTANT_WELCOME". This is required when the query is omitted.
     * `SESSION_ID` - When some concrete string is specified, the value is applied as a Session ID. When the "inherit" is specified or omitted, the previous value is applied (if any concrete value was not used at the time, this tool will generate a random Session ID value). And, when the "new" is specified, the re-generated new value is applied.
@@ -56,7 +60,7 @@ tests:
     * parameters - This defines parameters which were parsed from the query by the Dialogflow. 
       * `PARAMETER_NAME` - The parameter's name.
       * `PARAMETER_VALUE` - The parameter's value retrieved from the query phrase.
-    * `OUTPUT_CONTEXT` - The context ID determined by the intent or the fulfillment. You can specify multiple contexts, and also can omit.
+    * `OUTPUT_CONTEXT` - The context ID determined by the intent or the fulfillment which should be contained. You can specify multiple contexts, and also can omit.
     * `SPEECH_REGULAR_EXPRESSION` - The regular expression to validate the response from the Dialogflow. When you specify multiple regular expressions, the test is passed if matched at least one expression. That is, the condition is OR.
 
 In the `PARAMETER_VALUE` and the `SPEECH_REGULAR_EXPRESSION`, you can use macros. In the latest version, the following macros are supported:
@@ -69,6 +73,7 @@ The sample is like the following:
 ```yaml
 clientAccessToken: ...
 defaultLanguage: en
+defaultLocale: en-US
 tests:
   -
     condition:

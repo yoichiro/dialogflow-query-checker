@@ -1,5 +1,35 @@
 package query
 
+// Request models
+
+type RequestBody struct {
+	Contexts []string `json:"contexts,omitempty"`
+	Language string `json:"lang"`
+	OriginalRequest OriginalRequest `json:"originalRequest"`
+	Query string `json:"query,omitempty"`
+	Event Event `json:"event,omitempty"`
+	SessionId string `json:"sessionId"`
+}
+
+type Event struct {
+	Name string `json:"name,omitempty"`
+}
+
+type OriginalRequest struct {
+	Source string `json:"source"`
+	Data Data `json:"data"`
+}
+
+type Data struct {
+	User User `json:"user"`
+}
+
+type User struct {
+	Locale string `json:"locale"`
+}
+
+// Response models
+
 type Response struct {
 	Result Result `json:"result"`
 	Status Status `json:"status"`
