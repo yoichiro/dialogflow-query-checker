@@ -66,4 +66,9 @@ type Metadata struct {
 
 type Fulfillment struct {
 	Speech string `json:"speech"`
+	Data struct {
+		Google struct {
+			ExpectUserResponse bool `json:"expect_user_response"`
+		} `json:"google"`
+	} `json:"data"`
 }

@@ -41,6 +41,7 @@ tests:
         - <OUTPUT_CONTEXT>
       speeches:
         - <SPEECH_REGULAR_EXPRESSION>
+      endConversation: <END_CONVERSATION>
 ```
 
 * `CLIENT_ACCESS_TOKEN` - The client access token issued by the Dialogflow. You can get the token from the project configuration page of the your Dialogflow project. You can omit this value. Instead, you need to specify this value with a `DIALOGFLOW_CLIENT_ACCESS_TOKEN` environment variable.
@@ -62,6 +63,7 @@ tests:
       * `PARAMETER_VALUE` - The parameter's value retrieved from the query phrase.
     * `OUTPUT_CONTEXT` - The context ID determined by the intent or the fulfillment which should be contained. You can specify multiple contexts, and also can omit.
     * `SPEECH_REGULAR_EXPRESSION` - The regular expression to validate the response from the Dialogflow. When you specify multiple regular expressions, the test is passed if matched at least one expression. That is, the condition is OR.
+    * `END_CONVERSATION` - This value is "true" or "false". The "false" is applied, if omitted. You should specify the value "true", if you confirm that the expected response should order to finish this conversation. 
 
 In the `PARAMETER_VALUE` and the `SPEECH_REGULAR_EXPRESSION`, you can use macros. In the latest version, the following macros are supported:
 
