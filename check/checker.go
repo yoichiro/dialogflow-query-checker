@@ -14,11 +14,15 @@ import (
 func Execute(def *config.Definition) (*Holder, error) {
 	results := list.New()
 	for _, test := range def.Tests {
+		if def.Environment.Debug {
+			fmt.Printf("[Start] %s\n", test.CreatePrefix())
+		}
+
 		start := time.Now()
 
 		assertResults := list.New()
 
-		actual, err := query.Execute(&test, def.ClientAccessToken)
+		actual, err := query.Execute(&test, def)
 		if err != nil {
 			return nil, err
 		}
@@ -46,6 +50,10 @@ func Execute(def *config.Definition) (*Holder, error) {
 
 		end := time.Now()
 		results.PushBack(NewTestResult(test.CreatePrefix(), (end.Sub(start)).Seconds(), assertResults))
+
+		if def.Environment.Debug {
+			fmt.Printf("\n[End] %s\n", test.CreatePrefix())
+		}
 	}
 	return &Holder{
 		TestResults: results,

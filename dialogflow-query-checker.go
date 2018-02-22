@@ -25,27 +25,43 @@ func main() {
 					Name: "output, o",
 					Usage: "Output results as JUnit XML format `FILE`",
 				},
+				cli.BoolFlag{
+					Name: "debug, d",
+					Usage: "Debug mode",
+				},
 			},
 			ArgsUsage: "[configuration file] A configuration YAML file which has conditions and expected query results",
 			Action: func(c *cli.Context) error {
 				fmt.Printf("%s version %s\n", app.Name, app.Version)
+
 				start := time.Now()
+
 				if !c.Args().Present() {
 					return cli.NewExitError("[Error] A configuration file not specified", 1)
 				}
+
 				path := c.Args().First()
 				def, err := config.LoadConfigurationFile(path)
 				if err != nil {
 					return cli.NewExitError(fmt.Sprintf("[Error] %s", err), 1)
 				}
 				fmt.Printf("The configuration file loaded: %s\n", path)
+
+				debug := c.Bool("debug")
+				if debug {
+					fmt.Println("The debug mode is on")
+				}
+				(&def.Environment).Debug = debug
+
 				fmt.Println("Running query tests for Dialogflow.")
 				holder, err := check.Execute(def)
 				fmt.Println()
 				if err != nil {
 					return cli.NewExitError(fmt.Sprintf("[Error] %s", err), 1)
 				}
+
 				end := time.Now()
+
 				output.Standard(holder, start, end)
 				if c.String("output") != "" {
 					err = output.JunitXml(holder, c.String("output"), start, end)
@@ -53,6 +69,7 @@ func main() {
 						return cli.NewExitError(fmt.Sprintf("[Error] %s", err), 1)
 					}
 				}
+
 				if holder.AllFailureAssertResultCount() == 0 {
 					return nil
 				} else {

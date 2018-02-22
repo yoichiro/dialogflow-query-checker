@@ -7,6 +7,11 @@ type Definition struct {
 	DefaultLanguage string `yaml:"defaultLanguage"`
 	DefaultLocale string `yaml:"defaultLocale"`
 	Tests []Test `yaml:"tests"`
+	Environment Environment
+}
+
+type Environment struct {
+	Debug bool
 }
 
 type Test struct {
