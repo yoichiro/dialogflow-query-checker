@@ -49,6 +49,7 @@ type Expect struct {
 	Contexts []string `yaml:"contexts"`
 	Speech string `yaml:"speech"`
 	Speeches []string `yaml:"speeches"`
+	EndConversation string `yaml:"endConversation"`
 }
 
 type Parameter struct {

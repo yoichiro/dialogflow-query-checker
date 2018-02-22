@@ -47,6 +47,8 @@ func Execute(def *config.Definition) (*Holder, error) {
 			re := regexp.MustCompile(evaluateDateMacro(test.Expect.Speech, "1月2日"))
 			displayResult(assertResults, assertByRegexp("speech", re, actual.Result.Fulfillment.Speech))
 		}
+		expectedEndConversation := test.Expect.EndConversation == "true"
+		displayResult(assertResults, assertBoolEquals("endConversation", expectedEndConversation, !actual.Result.Fulfillment.Data.Google.ExpectUserResponse))
 
 		end := time.Now()
 		results.PushBack(NewTestResult(test.CreatePrefix(), (end.Sub(start)).Seconds(), assertResults))
@@ -74,6 +76,14 @@ func assertStatus(status *query.Status) *AssertResult {
 		return NewFailureAssertResult("status", fmt.Sprintf("status is %d, not 200. (%s: %s)", status.Code, status.ErrorType, status.ErrorDetails), strconv.Itoa(200), strconv.Itoa(status.Code))
 	} else {
 		return NewSuccessAssertResult("status")
+	}
+}
+
+func assertBoolEquals(name string, expected bool, actual bool) *AssertResult {
+	if expected != actual {
+		return NewFailureAssertResult(name, fmt.Sprintf("%s is not same as expected value.", name), strconv.FormatBool(expected), strconv.FormatBool(actual))
+	} else {
+		return NewSuccessAssertResult(name)
 	}
 }
 
