@@ -174,6 +174,16 @@ workflows:
 
 You will see the integrated test summary information on your CircleCI project after steps above.
 
+### Retry
+
+You can set the count of retrying using `--retry` or `-r` option as the following:
+
+```bash
+$ dialogflow-query-checker run --retry <RETRYING_COUNT> <CONFIGURATION_FILE_PATH>
+``` 
+
+When the Dialogflow returns a result status code which is not 200 and you set a positive value as the retry count, this tool will resend the same request to the Dialogflow.  
+
 ## For developers
 
 You can build this tool by the following steps:
