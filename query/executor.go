@@ -10,6 +10,23 @@ import (
 )
 
 func Execute(test *config.Test, def *config.Definition) (*Response, error) {
+	for currentRetryCount := 0;; {
+		res, err := doExecute(test, def)
+		if err != nil {
+			return nil, err
+		}
+		if res.Status.Code == 200 {
+			return res, nil
+		}
+		currentRetryCount++
+		if def.Environment.RetryCount < currentRetryCount {
+			return res, nil
+		}
+		fmt.Print("R")
+	}
+}
+
+func doExecute(test *config.Test, def *config.Definition) (*Response, error) {
 	res, err := send(test, def)
 	if err != nil {
 		return nil, err

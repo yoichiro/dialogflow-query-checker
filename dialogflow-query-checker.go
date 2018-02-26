@@ -29,6 +29,10 @@ func main() {
 					Name: "debug, d",
 					Usage: "Debug mode",
 				},
+				cli.IntFlag{
+					Name:  "retry, r",
+					Usage: "The count of retrying",
+				},
 			},
 			ArgsUsage: "[configuration file] A configuration YAML file which has conditions and expected query results",
 			Action: func(c *cli.Context) error {
@@ -52,6 +56,13 @@ func main() {
 					fmt.Println("The debug mode is on")
 				}
 				(&def.Environment).Debug = debug
+
+				retryCount := c.Int("retry")
+				if retryCount < 0 {
+					return cli.NewExitError(fmt.Sprint("[Error] The count of retrying must be positive"), 1)
+				}
+				fmt.Printf("The count of retrying: %d\n", c.Int("retry"))
+				(&def.Environment).RetryCount = retryCount
 
 				fmt.Println("Running query tests for Dialogflow.")
 				holder, err := check.Execute(def)
