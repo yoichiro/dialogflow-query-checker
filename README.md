@@ -22,6 +22,7 @@ To check your intents, actions and fulfillment, you need to create a configurati
 clientAccessToken: <CLIENT_ACCESS_TOKEN>
 defaultLanguage: <DEFAULT_LANGUAGE>
 defaultLocale: <DEFAULT_LOCALE>
+dateMacroFormat: <DATE_MACRO_FORMAT>
 tests:
   -
     condition:
@@ -47,6 +48,7 @@ tests:
 * `CLIENT_ACCESS_TOKEN` - The client access token issued by the Dialogflow. You can get the token from the project configuration page of the your Dialogflow project. You can omit this value. Instead, you need to specify this value with a `DIALOGFLOW_CLIENT_ACCESS_TOKEN` environment variable.
 * `DEFAULT_LANGUAGE` - This language value is used, if the language value in each test definition is not specified.
 * `DEFAULT_LOCALE` - This locale value is used, if the locale value in each test definition is not specified.
+* `DATE_MACRO_FORMAT` - You can use a date macro for `query` and `speeches` like `${date.today}`. This is a format used when evaluating the macro. This format is based on [Go Programming Language Date and Time format](https://golang.org/src/time/format.go). For example, you can specify like `Jan 1, 2006`.
 * tests - This is an array which has each test case.
   * condition - This defines the condition of the query represented by contexts and a query.
     * `INPUT_CONTEXT` - The context ID when the query sends. You can specify multiple contexts, and also can omit.
@@ -65,7 +67,7 @@ tests:
     * `SPEECH_REGULAR_EXPRESSION` - The regular expression to validate the response from the Dialogflow. When you specify multiple regular expressions, the test is passed if matched at least one expression. That is, the condition is OR.
     * `END_CONVERSATION` - This value is "true" or "false". The "false" is applied, if omitted. You should specify the value "true", if you confirm that the expected response should order to finish this conversation. 
 
-In the `PARAMETER_VALUE` and the `SPEECH_REGULAR_EXPRESSION`, you can use macros. In the latest version, the following macros are supported:
+In the `QUERY_STRING`, the `PARAMETER_VALUE` and the `SPEECH_REGULAR_EXPRESSION`, you can use macros. In the latest version, the following macros are supported:
 
 * `${date.today}` - This is replaced to today's date string.
 * `${date.tomorrow}` - This is replaced to tomorrow's date string.

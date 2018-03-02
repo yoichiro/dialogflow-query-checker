@@ -6,6 +6,7 @@ type Definition struct {
 	ClientAccessToken string `yaml:"clientAccessToken"`
 	DefaultLanguage string `yaml:"defaultLanguage"`
 	DefaultLocale string `yaml:"defaultLocale"`
+	DateMacroFormat string `yaml:"dateMacroFormat"`
 	Tests []Test `yaml:"tests"`
 	Environment Environment
 }
@@ -46,16 +47,9 @@ type Condition struct {
 type Expect struct {
 	Action string `yaml:"action"`
 	IntentName string `yaml:"intentName"`
-	Parameters Parameter `yaml:"parameters"`
+	Parameters map[string]string `yaml:"parameters"`
 	Contexts []string `yaml:"contexts"`
 	Speech string `yaml:"speech"`
 	Speeches []string `yaml:"speeches"`
 	EndConversation string `yaml:"endConversation"`
-}
-
-type Parameter struct {
-	Date string `yaml:"date"`
-	Prefecture string `yaml:"prefecture"`
-	Keyword string `yaml:"keyword"`
-	Event string `yaml:"event"`
 }

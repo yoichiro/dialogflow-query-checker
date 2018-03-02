@@ -7,6 +7,8 @@ import (
 	"github.com/google/uuid"
 	"errors"
 	"fmt"
+	"time"
+	"strings"
 )
 
 func LoadConfigurationFile(path string) (*Definition, error) {
@@ -23,12 +25,14 @@ func LoadConfigurationFile(path string) (*Definition, error) {
 	determineClientAccessToken(&def)
 	determineSessionId(&def)
 	err = determineLanguageAndLocale(&def)
+	determineDateMacro(&def)
 	if err != nil {
 		return nil, err
 	}
 
 	return &def, nil
 }
+
 func determineLanguageAndLocale(def *Definition) error {
 	language := def.DefaultLanguage
 	locale := def.DefaultLocale
@@ -56,6 +60,32 @@ func determineLanguageAndLocale(def *Definition) error {
 		}
 	}
 	return nil
+}
+
+func determineDateMacro(def *Definition) {
+	for i := range def.Tests {
+		condition := &def.Tests[i].Condition
+		condition.Query = evaluateDateMacro(condition.Query, def.DateMacroFormat)
+		parameters := &def.Tests[i].Expect.Parameters
+		for key, value := range *parameters {
+			(*parameters)[key] = evaluateDateMacro(value, "2006-01-02")
+		}
+		expect := &def.Tests[i].Expect
+		expect.Speech = evaluateDateMacro(expect.Speech, def.DateMacroFormat)
+		for i, v := range expect.Speeches {
+			expect.Speeches[i] = evaluateDateMacro(v, def.DateMacroFormat)
+		}
+	}
+}
+
+func evaluateDateMacro(s string, layout string) string {
+	t := time.Now()
+	today := t.Format(layout)
+	t = t.AddDate(0, 0, 1)
+	tomorrow := t.Format(layout)
+	result := strings.Replace(s, "${date.tomorrow}", tomorrow, -1)
+	result = strings.Replace(result, "${date.today}", today, -1)
+	return result
 }
 
 func determineSessionId(def *Definition) {
