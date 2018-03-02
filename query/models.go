@@ -37,7 +37,7 @@ type Response struct {
 
 type Result struct {
 	Action string `json:"action"`
-	Parameters Parameter `json:"parameters"`
+	Parameters map[string]string `json:"parameters"`
 	Metadata Metadata `json:"metadata"`
 	Contexts []Context `json:"contexts"`
 	Fulfillment Fulfillment `json:"fulfillment"`
@@ -51,13 +51,6 @@ type Status struct {
 
 type Context struct {
 	Name string `json:"name"`
-}
-
-type Parameter struct {
-	Date string `json:"date"`
-	Prefecture string `json:"prefecture"`
-	Keyword string `json:"keyword"`
-	Event string `json:"event"`
 }
 
 type Metadata struct {

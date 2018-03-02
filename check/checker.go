@@ -37,14 +37,13 @@ func Execute(def *config.Definition) (*Holder, error) {
 		if test.Expect.Contexts != nil {
 			displayResult(assertResults, assertArrayContains("contexts", test.Expect.Contexts, actualContexts))
 		}
-		displayResult(assertResults, assertStringEquals("date", evaluateDateMacro(test.Expect.Parameters.Date, "2006-01-02"), actual.Result.Parameters.Date))
-		displayResult(assertResults, assertStringEquals("prefecture", test.Expect.Parameters.Prefecture, actual.Result.Parameters.Prefecture))
-		displayResult(assertResults, assertStringEquals("keyword", test.Expect.Parameters.Keyword, actual.Result.Parameters.Keyword))
-		displayResult(assertResults, assertStringEquals("event", test.Expect.Parameters.Event, actual.Result.Parameters.Event))
+		for name, expected := range test.Expect.Parameters {
+			displayResult(assertResults, assertStringEquals(name, expected, actual.Result.Parameters[name]))
+		}
 		if test.Expect.Speeches != nil {
 			displayResult(assertResults, assertByMultipleRegexps( "speech", test.Expect.Speeches, actual.Result.Fulfillment.Speech))
 		} else {
-			re := regexp.MustCompile(evaluateDateMacro(test.Expect.Speech, "1月2日"))
+			re := regexp.MustCompile(test.Expect.Speech)
 			displayResult(assertResults, assertByRegexp("speech", re, actual.Result.Fulfillment.Speech))
 		}
 		expectedEndConversation := test.Expect.EndConversation == "true"
@@ -114,7 +113,7 @@ func assertByRegexp(name string, expected *regexp.Regexp, actual string) *Assert
 
 func assertByMultipleRegexps(name string, regexps []string, actual string) *AssertResult {
 	for _, exp := range regexps {
-		re := regexp.MustCompile(evaluateDateMacro(exp, "1月2日"))
+		re := regexp.MustCompile(exp)
 		if re.Match([]byte(actual)) {
 			return NewSuccessAssertResult(name)
 		}
@@ -140,14 +139,4 @@ func contains(array []string, s string) bool {
 		}
 	}
 	return false
-}
-
-func evaluateDateMacro(s string, layout string) string {
-	t := time.Now()
-	today := t.Format(layout)
-	t = t.AddDate(0, 0, 1)
-	tomorrow := t.Format(layout)
-	result := strings.Replace(s, "${date.tomorrow}", tomorrow, -1)
-	result = strings.Replace(result, "${date.today}", today, -1)
-	return result
 }
