@@ -46,8 +46,7 @@ func Execute(def *config.Definition) (*Holder, error) {
 			re := regexp.MustCompile(test.Expect.Speech)
 			displayResult(assertResults, assertByRegexp("speech", re, actual.Result.Fulfillment.Speech))
 		}
-		expectedEndConversation := test.Expect.EndConversation == "true"
-		displayResult(assertResults, assertBoolEquals("endConversation", expectedEndConversation, !actual.Result.Fulfillment.Data.Google.ExpectUserResponse))
+		displayResult(assertResults, assertBoolEquals("endConversation", test.Expect.ShouldEndConversation(), !actual.Result.Fulfillment.Data.Google.ExpectUserResponse))
 
 		end := time.Now()
 		results.PushBack(NewTestResult(test.CreatePrefix(), (end.Sub(start)).Seconds(), assertResults))
