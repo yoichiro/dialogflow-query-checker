@@ -61,7 +61,16 @@ type Fulfillment struct {
 	Speech string `json:"speech"`
 	Data struct {
 		Google struct {
-			ExpectUserResponse bool `json:"expect_user_response"`
+			ExpectUserResponse *bool `json:"expect_user_response,omitempty"`
 		} `json:"google"`
 	} `json:"data"`
+}
+
+func (fulfillment *Fulfillment) IsExpectUserResponse() bool {
+	expectUserResponse := fulfillment.Data.Google.ExpectUserResponse
+	if expectUserResponse == nil {
+		return true
+	} else {
+		return *expectUserResponse
+	}
 }
