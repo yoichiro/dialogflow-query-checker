@@ -7,6 +7,7 @@ type Definition struct {
 	DefaultLanguage string `yaml:"defaultLanguage"`
 	DefaultLocale string `yaml:"defaultLocale"`
 	DateMacroFormat string `yaml:"dateMacroFormat"`
+	DefaultServiceAccessToken string `yaml:"defaultServiceAccessToken"`
 	Tests []Test `yaml:"tests"`
 	Environment Environment
 }
@@ -42,6 +43,7 @@ type Condition struct {
 	Query string `yaml:"query"`
 	EventName string `yaml:"eventName"`
 	SessionId string `yaml:"sessionId"`
+	ServiceAccessToken string `yaml:"serviceAccessToken"`
 }
 
 type Expect struct {

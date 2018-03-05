@@ -64,6 +64,7 @@ func preprocess(def *Definition) error {
 	if err != nil {
 		return err
 	}
+	determineServiceAccessToken(def)
 	return nil
 }
 
@@ -94,6 +95,18 @@ func determineLanguageAndLocale(def *Definition) error {
 		}
 	}
 	return nil
+}
+
+func determineServiceAccessToken(def *Definition) {
+	if def.DefaultServiceAccessToken == "" {
+		def.DefaultServiceAccessToken = os.Getenv("DIALOGFLOW_SERVICE_ACCESS_TOKEN")
+	}
+	for i := range def.Tests {
+		condition := &def.Tests[i].Condition
+		if condition.ServiceAccessToken == "" {
+			condition.ServiceAccessToken = def.DefaultServiceAccessToken
+		}
+	}
 }
 
 func determineDateMacro(def *Definition) {

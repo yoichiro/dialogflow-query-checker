@@ -23,6 +23,7 @@ clientAccessToken: <CLIENT_ACCESS_TOKEN>
 defaultLanguage: <DEFAULT_LANGUAGE>
 defaultLocale: <DEFAULT_LOCALE>
 dateMacroFormat: <DATE_MACRO_FORMAT>
+defaultAccessToken: <DEFAULT_ACCESS_TOKEN>
 tests:
   -
     condition:
@@ -33,6 +34,7 @@ tests:
       query: <QUERY_STRING>
       eventName: <EVENT_NAME>
       sessionId: <SESSION_ID>
+      accessToken: <ACCESS_TOKEN>
     expect:
       action: <ACTION_ID>
       intentName: <INTENT_ID>
@@ -48,6 +50,7 @@ tests:
 * `DEFAULT_LANGUAGE` - This language value is used, if the language value in each test definition is not specified.
 * `DEFAULT_LOCALE` - This locale value is used, if the locale value in each test definition is not specified.
 * `DATE_MACRO_FORMAT` - You can use a date macro for `query` and `speeches` like `${date.today}`. This is a format used when evaluating the macro. This format is based on [Go Programming Language Date and Time format](https://golang.org/src/time/format.go). For example, you can specify like `Jan 1, 2006`.
+* `DEFAULT_SERVICE_ACCESS_TOKEN` - The access token issued by your service. You need to specify this access token to use Account Linking feature. If specified, this will be applied for all test-cases basically. Also, you can omit this and specify the access token with a `DIALOGFLOW_SERVICE_ACCESS_TOKEN` environment variable.
 * tests - This is an array which has each test case.
   * condition - This defines the condition of the query represented by contexts and a query.
     * `INPUT_CONTEXT` - The context ID when the query sends. You can specify multiple contexts, and also can omit.
@@ -56,6 +59,7 @@ tests:
     * `QUERY_STRING` - The query string. This means "User says" in Dialogflow. This is required when the event is omitted.
     * `EVENT_NAME` - The event name string. For example, "GOOGLE_ASSISTANT_WELCOME". This is required when the query is omitted.
     * `SESSION_ID` - When some concrete string is specified, the value is applied as a Session ID. When the "inherit" is specified or omitted, the previous value is applied (if any concrete value was not used at the time, this tool will generate a random Session ID value). And, when the "new" is specified, the re-generated new value is applied.
+    * `SERVICE_ACCESS_TOKEN` - The access token issued by your service. You need to specify this access token to use Account Linking feature. If specified, the `DEFAULT_SERVICE_ACCESS_TOKEN` value is overridden.
   * expect - This defines a expected result which should be returned from the Dialogflow.
     * `ACTION_ID` - The action ID determined by an intent.
     * `INTENT_ID` - The intent ID guessed by the query.

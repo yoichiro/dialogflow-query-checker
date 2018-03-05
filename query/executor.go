@@ -69,6 +69,9 @@ func send(test *config.Test, def *config.Definition) (*http.Response, error) {
 	}
 	requestBody.OriginalRequest.Source = "google"
 	requestBody.OriginalRequest.Data.User.Locale = test.Condition.Locale
+	if test.Condition.ServiceAccessToken != "" {
+		requestBody.OriginalRequest.Data.User.AccessToken = test.Condition.ServiceAccessToken
+	}
 
 	body, err := json.MarshalIndent(&requestBody, "", "  ")
 	if err != nil {
