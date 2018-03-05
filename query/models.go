@@ -65,12 +65,3 @@ type Fulfillment struct {
 		} `json:"google"`
 	} `json:"data"`
 }
-
-func (fulfillment *Fulfillment) IsExpectUserResponse() bool {
-	expectUserResponse := fulfillment.Data.Google.ExpectUserResponse
-	if expectUserResponse == nil {
-		return true
-	} else {
-		return *expectUserResponse
-	}
-}
