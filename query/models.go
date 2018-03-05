@@ -26,6 +26,7 @@ type Data struct {
 
 type User struct {
 	Locale string `json:"locale"`
+	AccessToken string `json:"accessToken,omitempty"`
 }
 
 // Response models
