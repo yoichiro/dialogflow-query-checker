@@ -53,3 +53,7 @@ type Expect struct {
 	Speeches []string `yaml:"speeches"`
 	EndConversation string `yaml:"endConversation"`
 }
+
+func (expect *Expect) ShouldEndConversation() bool {
+	return expect.EndConversation == "true"
+}

@@ -12,25 +12,59 @@ import (
 )
 
 func LoadConfigurationFile(path string) (*Definition, error) {
+	buf, err := loadFromFile(path)
+	if err != nil {
+		return nil, err
+	}
+
+	def, err := loadConfiguration(buf)
+	if err != nil {
+		return nil, err
+	}
+
+	return def, nil
+}
+
+func loadConfiguration(buf []byte) (*Definition, error) {
+	def, err := parseFile(buf)
+	if err != nil {
+		return nil, err
+	}
+
+	err = preprocess(def)
+	if err != nil {
+		return nil, err
+	}
+
+	return def, nil
+}
+
+func loadFromFile(path string) ([]byte, error) {
 	buf, err := ioutil.ReadFile(path)
 	if err != nil {
 		return nil, err
 	}
+	return buf, nil
+}
+
+func parseFile(buf []byte) (*Definition, error) {
 	var def Definition
-	err = yaml.Unmarshal(buf, &def)
+	err := yaml.Unmarshal(buf, &def)
 	if err != nil {
 		return nil, err
 	}
+	return &def, err
+}
 
-	determineClientAccessToken(&def)
-	determineSessionId(&def)
-	err = determineLanguageAndLocale(&def)
-	determineDateMacro(&def)
+func preprocess(def *Definition) error {
+	determineClientAccessToken(def)
+	determineSessionId(def)
+	err := determineLanguageAndLocale(def)
+	determineDateMacro(def)
 	if err != nil {
-		return nil, err
+		return err
 	}
-
-	return &def, nil
+	return nil
 }
 
 func determineLanguageAndLocale(def *Definition) error {
