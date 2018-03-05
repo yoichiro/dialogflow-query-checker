@@ -81,9 +81,17 @@ defaultLocale: en-US
 tests:
   -
     condition:
+      event: GOOGLE_ASSISTANT_WELCOME
+    expect:
+      action: "input.welcome"
+      intentName: "input.welcome"
+      speeches:
+        - "^Hello\\.$"
+  -
+    condition:
       contexts:
         - "input_condition"
-      query: "How many times is a Google I/O in this year?" 
+      query: "How many times is a Google I/O in this year\\?" 
     expect:
       action: "event_info"
       intentName: "input.condition"
@@ -93,7 +101,7 @@ tests:
       contexts:
         - "answered"
       speeches:
-        - "^The event is the (1st)|(2nd)|(3rd)|([0-9]+th).$"
+        - "^The event is the (1st)|(2nd)|(3rd)|([0-9]+th)\\.$"
 ...
 ```
 
