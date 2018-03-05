@@ -23,7 +23,7 @@ clientAccessToken: <CLIENT_ACCESS_TOKEN>
 defaultLanguage: <DEFAULT_LANGUAGE>
 defaultLocale: <DEFAULT_LOCALE>
 dateMacroFormat: <DATE_MACRO_FORMAT>
-defaultAccessToken: <DEFAULT_ACCESS_TOKEN>
+defaultServiceAccessToken: <DEFAULT_SERVICE_ACCESS_TOKEN>
 tests:
   -
     condition:
@@ -34,7 +34,7 @@ tests:
       query: <QUERY_STRING>
       eventName: <EVENT_NAME>
       sessionId: <SESSION_ID>
-      accessToken: <ACCESS_TOKEN>
+      serviceAccessToken: <SERVICE_ACCESS_TOKEN>
     expect:
       action: <ACTION_ID>
       intentName: <INTENT_ID>
@@ -194,7 +194,35 @@ You can set the count of retrying using `--retry` or `-r` option as the followin
 $ dialogflow-query-checker run --retry <RETRYING_COUNT> <CONFIGURATION_FILE_PATH>
 ``` 
 
-When the Dialogflow returns a result status code which is not 200 and you set a positive value as the retry count, this tool will resend the same request to the Dialogflow.  
+When the Dialogflow returns a result status code which is not 200 and you set a positive value as the retry count, this tool will resend the same request to the Dialogflow.
+
+### Account Linking
+
+When your assistant app is applying [Account Linking](https://developers.google.com/actions/identity/), your app does not work without an access token. That is, your app works only when the access token issued by your service is passed from Account Linking feature on Actions on Google. If your app is called without any access token, an error should occur in your fulfillment.
+
+This tool supports specifying an access token specified by one of following definitions:
+
+* `DIALOGFLOW_SERVICE_ACCESS_TOKEN` environment variable.
+* `defaultServiceAccessToken` item in your YAML configuration file.
+* `serviceAccessToken` item for each test-case in your YAML configuration file.
+
+If the access token specified, the access token is passed to the Dialogflow agent like the following:
+
+```json
+{
+  ...
+  "originalRequest": {
+    ...
+    "data": {
+      ...
+      "user": {
+        ...
+        "accessToken": <SERVICE_ACCESS_TOKEN>
+      }
+    }
+  }
+}
+```
 
 ## For developers
 
