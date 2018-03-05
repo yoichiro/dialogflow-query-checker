@@ -47,9 +47,6 @@ func Execute(def *config.Definition) (*Holder, error) {
 			displayResult(assertResults, assertByRegexp("speech", re, actual.Result.Fulfillment.Speech))
 		}
 
-		// TODO: Fix #19
-		//displayResult(assertResults, assertBoolEquals("endConversation", test.Expect.ShouldEndConversation(), !actual.Result.Fulfillment.IsExpectUserResponse()))
-
 		end := time.Now()
 		results.PushBack(NewTestResult(test.CreatePrefix(), (end.Sub(start)).Seconds(), assertResults))
 
