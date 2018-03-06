@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"time"
 	"strings"
+	"reflect"
 )
 
 func LoadConfigurationFile(path string) (*Definition, error) {
@@ -113,14 +114,25 @@ func determineDateMacro(def *Definition) {
 	for i := range def.Tests {
 		condition := &def.Tests[i].Condition
 		condition.Query = evaluateDateMacro(condition.Query, def.DateMacroFormat)
-		parameters := &def.Tests[i].Expect.Parameters
-		for key, value := range *parameters {
-			(*parameters)[key] = evaluateDateMacro(value, "2006-01-02")
-		}
+
+		traverseMapAndEvaluateDateMacro(&def.Tests[i].Expect.Parameters)
+
 		expect := &def.Tests[i].Expect
 		expect.Speech = evaluateDateMacro(expect.Speech, def.DateMacroFormat)
 		for i, v := range expect.Speeches {
 			expect.Speeches[i] = evaluateDateMacro(v, def.DateMacroFormat)
+		}
+	}
+}
+
+func traverseMapAndEvaluateDateMacro(m *map[interface{}]interface{}) {
+	for key := range *m {
+		value := (*m)[key]
+		if value != nil && reflect.TypeOf(value).String() == "string" {
+			(*m)[key] = evaluateDateMacro(value.(string), "2006-01-02")
+		} else if value != nil && strings.HasPrefix(reflect.TypeOf(value).String(), "map") {
+			child := value.(map[interface{}]interface{})
+			traverseMapAndEvaluateDateMacro(&child)
 		}
 	}
 }

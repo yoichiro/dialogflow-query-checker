@@ -1,14 +1,15 @@
 package check
 
 import (
-	"github.com/yoichiro/dialogflow-query-checker/config"
-	"github.com/yoichiro/dialogflow-query-checker/query"
 	"container/list"
 	"fmt"
+	"github.com/yoichiro/dialogflow-query-checker/config"
+	"github.com/yoichiro/dialogflow-query-checker/query"
+	"reflect"
 	"regexp"
+	"strconv"
 	"strings"
 	"time"
-	"strconv"
 )
 
 func Execute(def *config.Definition) (*Holder, error) {
@@ -37,11 +38,9 @@ func Execute(def *config.Definition) (*Holder, error) {
 		if test.Expect.Contexts != nil {
 			displayResult(assertResults, assertArrayContains("contexts", test.Expect.Contexts, actualContexts))
 		}
-		for name, expected := range test.Expect.Parameters {
-			displayResult(assertResults, assertStringEquals(name, expected, actual.Result.Parameters[name]))
-		}
+		assertMapEquals(assertResults, "parameters", []string{}, test.Expect.Parameters, actual.Result.Parameters)
 		if test.Expect.Speeches != nil {
-			displayResult(assertResults, assertByMultipleRegexps( "speech", test.Expect.Speeches, actual.Result.Fulfillment.Speech))
+			displayResult(assertResults, assertByMultipleRegexps("speech", test.Expect.Speeches, actual.Result.Fulfillment.Speech))
 		} else {
 			re := regexp.MustCompile(test.Expect.Speech)
 			displayResult(assertResults, assertByRegexp("speech", re, actual.Result.Fulfillment.Speech))
@@ -59,6 +58,26 @@ func Execute(def *config.Definition) (*Holder, error) {
 	}, nil
 }
 
+func assertMapEquals(assertResults *list.List, name string, parent []string, expected map[interface{}]interface{}, actual map[string]interface{}) {
+	for keyObj, expectedValue := range expected {
+		key := keyObj.(string)
+		if hasSameChildMap(key, actual) {
+			assertMapEquals(assertResults, name, append(parent, key), expected[key].(map[interface{}]interface{}), actual[key].(map[string]interface{}))
+		} else {
+			displayResult(assertResults, assertStringEquals(name+"["+strings.Join(append(parent, key), ".")+"]", fmt.Sprint(expectedValue), fmt.Sprint(actual[key])))
+		}
+	}
+}
+
+func hasSameChildMap(key string, m map[string]interface{}) bool {
+	value := m[key]
+	if value != nil {
+		return strings.HasPrefix(reflect.TypeOf(value).String(), "map")
+	} else {
+		return false
+	}
+}
+
 func displayResult(results *list.List, assertResult *AssertResult) {
 	if assertResult.Success {
 		fmt.Print(".")
@@ -73,14 +92,6 @@ func assertStatus(status *query.Status) *AssertResult {
 		return NewFailureAssertResult("status", fmt.Sprintf("status is %d, not 200. (%s: %s)", status.Code, status.ErrorType, status.ErrorDetails), strconv.Itoa(200), strconv.Itoa(status.Code))
 	} else {
 		return NewSuccessAssertResult("status")
-	}
-}
-
-func assertBoolEquals(name string, expected bool, actual bool) *AssertResult {
-	if expected != actual {
-		return NewFailureAssertResult(name, fmt.Sprintf("%s is not same as expected value.", name), strconv.FormatBool(expected), strconv.FormatBool(actual))
-	} else {
-		return NewSuccessAssertResult(name)
 	}
 }
 
