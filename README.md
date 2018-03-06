@@ -65,7 +65,7 @@ tests:
     * `INTENT_ID` - The intent ID guessed by the query.
     * parameters - This defines parameters which were parsed from the query by the Dialogflow. 
       * `PARAMETER_NAME` - The parameter's name.
-      * `PARAMETER_VALUE` - The parameter's value retrieved from the query phrase.
+      * `PARAMETER_VALUE` - The parameter's value retrieved from the query phrase. An object can also be specified (ex. `$sys.unit-currency` consists of two properties: `amount` and `currency`).
     * `OUTPUT_CONTEXT` - The context ID determined by the intent or the fulfillment which should be contained. You can specify multiple contexts, and also can omit.
     * `SPEECH_REGULAR_EXPRESSION` - The regular expression to validate the response from the Dialogflow. When you specify multiple regular expressions, the test is passed if matched at least one expression. That is, the condition is OR.
 

@@ -38,7 +38,7 @@ type Response struct {
 
 type Result struct {
 	Action string `json:"action"`
-	Parameters map[string]string `json:"parameters"`
+	Parameters map[string]interface{} `json:"parameters"`
 	Metadata Metadata `json:"metadata"`
 	Contexts []Context `json:"contexts"`
 	Fulfillment Fulfillment `json:"fulfillment"`

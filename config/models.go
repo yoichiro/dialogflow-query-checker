@@ -49,7 +49,7 @@ type Condition struct {
 type Expect struct {
 	Action string `yaml:"action"`
 	IntentName string `yaml:"intentName"`
-	Parameters map[string]string `yaml:"parameters"`
+	Parameters map[interface{}]interface{} `yaml:"parameters"`
 	Contexts []string `yaml:"contexts"`
 	Speech string `yaml:"speech"`
 	Speeches []string `yaml:"speeches"`
