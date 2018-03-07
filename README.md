@@ -45,7 +45,7 @@ tests:
         - <OUTPUT_CONTEXT>
       speeches:
         - <SPEECH_REGULAR_EXPRESSION>
-      scoreTHreshold: <SCORE_THRESHOLD>
+      scoreThreshold: <SCORE_THRESHOLD>
 ```
 
 * `CLIENT_ACCESS_TOKEN` - The client access token issued by the Dialogflow. You can get the token from the project configuration page of the your Dialogflow project. You can omit this value. Instead, you need to specify this value with a `DIALOGFLOW_CLIENT_ACCESS_TOKEN` environment variable.
