@@ -42,6 +42,7 @@ type Result struct {
 	Metadata Metadata `json:"metadata"`
 	Contexts []Context `json:"contexts"`
 	Fulfillment Fulfillment `json:"fulfillment"`
+	Score float64 `json:"score"`
 }
 
 type Status struct {

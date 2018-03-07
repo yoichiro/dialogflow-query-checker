@@ -8,6 +8,7 @@ type Definition struct {
 	DefaultLocale string `yaml:"defaultLocale"`
 	DateMacroFormat string `yaml:"dateMacroFormat"`
 	DefaultServiceAccessToken string `yaml:"defaultServiceAccessToken"`
+	DefaultScoreThreshold float64 `yaml:"defaultScoreThreshold"`
 	Tests []Test `yaml:"tests"`
 	Environment Environment
 }
@@ -53,4 +54,5 @@ type Expect struct {
 	Contexts []string `yaml:"contexts"`
 	Speech string `yaml:"speech"`
 	Speeches []string `yaml:"speeches"`
+	ScoreThreshold float64 `yaml:"scoreThreshold"`
 }

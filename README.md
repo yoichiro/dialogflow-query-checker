@@ -24,6 +24,7 @@ defaultLanguage: <DEFAULT_LANGUAGE>
 defaultLocale: <DEFAULT_LOCALE>
 dateMacroFormat: <DATE_MACRO_FORMAT>
 defaultServiceAccessToken: <DEFAULT_SERVICE_ACCESS_TOKEN>
+defaultScoreThreshold: <DEFAULT_SCORE_THRESHOLD>
 tests:
   -
     condition:
@@ -44,6 +45,7 @@ tests:
         - <OUTPUT_CONTEXT>
       speeches:
         - <SPEECH_REGULAR_EXPRESSION>
+      scoreTHreshold: <SCORE_THRESHOLD>
 ```
 
 * `CLIENT_ACCESS_TOKEN` - The client access token issued by the Dialogflow. You can get the token from the project configuration page of the your Dialogflow project. You can omit this value. Instead, you need to specify this value with a `DIALOGFLOW_CLIENT_ACCESS_TOKEN` environment variable.
@@ -51,6 +53,7 @@ tests:
 * `DEFAULT_LOCALE` - This locale value is used, if the locale value in each test definition is not specified.
 * `DATE_MACRO_FORMAT` - You can use a date macro for `query` and `speeches` like `${date.today}`. This is a format used when evaluating the macro. This format is based on [Go Programming Language Date and Time format](https://golang.org/src/time/format.go). For example, you can specify like `Jan 1, 2006`.
 * `DEFAULT_SERVICE_ACCESS_TOKEN` - The access token issued by your service. You need to specify this access token to use Account Linking feature. If specified, this will be applied for all test-cases basically. Also, you can omit this and specify the access token with a `DIALOGFLOW_SERVICE_ACCESS_TOKEN` environment variable.
+* `DEFAULT_SCORE_THRESHOLD` - This score value is a minimum value which all test-cases should exceed.
 * tests - This is an array which has each test case.
   * condition - This defines the condition of the query represented by contexts and a query.
     * `INPUT_CONTEXT` - The context ID when the query sends. You can specify multiple contexts, and also can omit.
@@ -68,11 +71,7 @@ tests:
       * `PARAMETER_VALUE` - The parameter's value retrieved from the query phrase. An object can also be specified (ex. `$sys.unit-currency` consists of two properties: `amount` and `currency`).
     * `OUTPUT_CONTEXT` - The context ID determined by the intent or the fulfillment which should be contained. You can specify multiple contexts, and also can omit.
     * `SPEECH_REGULAR_EXPRESSION` - The regular expression to validate the response from the Dialogflow. When you specify multiple regular expressions, the test is passed if matched at least one expression. That is, the condition is OR.
-
-In the `QUERY_STRING`, the `PARAMETER_VALUE` and the `SPEECH_REGULAR_EXPRESSION`, you can use macros. In the latest version, the following macros are supported:
-
-* `${date.today}` - This is replaced to today's date string.
-* `${date.tomorrow}` - This is replaced to tomorrow's date string.
+    * `SCORE_THRESHOLD` - This score value is a minimum value which this test-case should exceed. If the defaultScoreThreshold is specified, you can override the value using this.
 
 The sample is like the following:
 
@@ -105,6 +104,41 @@ tests:
       speeches:
         - "^The event is the (1st)|(2nd)|(3rd)|([0-9]+th)\\.$"
 ...
+```
+
+### Date Macro
+
+In the `QUERY_STRING`, the `PARAMETER_VALUE` and the `SPEECH_REGULAR_EXPRESSION`, you can use macros. In the latest version, the following macros are supported:
+
+* `${date.today}` - This is replaced to today's date string.
+* `${date.tomorrow}` - This is replaced to tomorrow's date string.
+
+### Account Linking
+
+When your assistant app is applying [Account Linking](https://developers.google.com/actions/identity/), your app does not work without an access token. That is, your app works only when the access token issued by your service is passed from Account Linking feature on Actions on Google. If your app is called without any access token, an error should occur in your fulfillment.
+
+This tool supports specifying an access token specified by one of following definitions:
+
+* `DIALOGFLOW_SERVICE_ACCESS_TOKEN` environment variable.
+* `defaultServiceAccessToken` item in your YAML configuration file.
+* `serviceAccessToken` item for each test-case in your YAML configuration file.
+
+If the access token specified, the access token is passed to the Dialogflow agent like the following:
+
+```text
+{
+  ...
+  "originalRequest": {
+    ...
+    "data": {
+      ...
+      "user": {
+        ...
+        "accessToken": <SERVICE_ACCESS_TOKEN>
+      }
+    }
+  }
+}
 ```
 
 ## Execute
@@ -195,34 +229,6 @@ $ dialogflow-query-checker run --retry <RETRYING_COUNT> <CONFIGURATION_FILE_PATH
 ``` 
 
 When the Dialogflow returns a result status code which is not 200 and you set a positive value as the retry count, this tool will resend the same request to the Dialogflow.
-
-### Account Linking
-
-When your assistant app is applying [Account Linking](https://developers.google.com/actions/identity/), your app does not work without an access token. That is, your app works only when the access token issued by your service is passed from Account Linking feature on Actions on Google. If your app is called without any access token, an error should occur in your fulfillment.
-
-This tool supports specifying an access token specified by one of following definitions:
-
-* `DIALOGFLOW_SERVICE_ACCESS_TOKEN` environment variable.
-* `defaultServiceAccessToken` item in your YAML configuration file.
-* `serviceAccessToken` item for each test-case in your YAML configuration file.
-
-If the access token specified, the access token is passed to the Dialogflow agent like the following:
-
-```json
-{
-  ...
-  "originalRequest": {
-    ...
-    "data": {
-      ...
-      "user": {
-        ...
-        "accessToken": <SERVICE_ACCESS_TOKEN>
-      }
-    }
-  }
-}
-```
 
 ## For developers
 

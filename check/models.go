@@ -75,13 +75,15 @@ func (holder *Holder) AllFailureTestResultCount() int {
 type TestResult struct {
 	Prefix string
 	Time float64
+	Score float64
 	AssertResults *list.List
 }
 
-func NewTestResult(prefix string, time float64, assertResults *list.List) *TestResult {
+func NewTestResult(prefix string, time float64, score float64, assertResults *list.List) *TestResult {
 	r := &TestResult{
 		Prefix: prefix,
 		Time: time,
+		Score: score,
 		AssertResults: assertResults,
 	}
 	return r

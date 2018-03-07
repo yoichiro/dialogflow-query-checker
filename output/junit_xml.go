@@ -22,6 +22,7 @@ func JunitXml(holder *check.Holder, path string, start time.Time, end time.Time)
 			Name: testResult.Prefix,
 			Assertions: strconv.Itoa(testResult.AllAssertResultCount()),
 			Time: fmt.Sprintf("%f", testResult.Time),
+			Score: fmt.Sprintf("%f", testResult.Score),
 		}
 		for _, assertResult := range testResult.AllFailureAssertResults() {
 			testcase.AddFailure(Failure{
@@ -68,6 +69,7 @@ type TestCase struct {
 	Name string `xml:"name,attr"`
 	Assertions string `xml:"assertions,attr"`
 	Time string `xml:"time,attr"`
+	Score string `xml:"score,attr"`
 	Failures []Failure `xml:",omitempty"`
 }
 
