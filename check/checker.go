@@ -50,7 +50,7 @@ func Execute(def *config.Definition) (*Holder, error) {
 		}
 
 		end := time.Now()
-		results.PushBack(NewTestResult(test.CreatePrefix(), (end.Sub(start)).Seconds(), assertResults))
+		results.PushBack(NewTestResult(test.CreatePrefix(), (end.Sub(start)).Seconds(), actual.Result.Score, assertResults))
 
 		if def.Environment.Debug {
 			fmt.Printf("\n[End] %s\n", test.CreatePrefix())
