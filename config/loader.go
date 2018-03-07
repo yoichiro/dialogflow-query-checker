@@ -66,7 +66,18 @@ func preprocess(def *Definition) error {
 		return err
 	}
 	determineServiceAccessToken(def)
+	determineScore(def)
 	return nil
+}
+
+func determineScore(def *Definition) {
+	defaultScoreThreshold := def.DefaultScoreThreshold
+	for i := range def.Tests {
+		expect := &def.Tests[i].Expect
+		if expect.ScoreThreshold == 0 {
+			expect.ScoreThreshold = defaultScoreThreshold
+		}
+	}
 }
 
 func determineLanguageAndLocale(def *Definition) error {

@@ -45,6 +45,9 @@ func Execute(def *config.Definition) (*Holder, error) {
 			re := regexp.MustCompile(test.Expect.Speech)
 			displayResult(assertResults, assertByRegexp("speech", re, actual.Result.Fulfillment.Speech))
 		}
+		if test.Expect.ScoreThreshold > 0 {
+			displayResult(assertResults, assertScoreThreshold(test.Expect.ScoreThreshold, actual.Result.Score))
+		}
 
 		end := time.Now()
 		results.PushBack(NewTestResult(test.CreatePrefix(), (end.Sub(start)).Seconds(), assertResults))
@@ -100,6 +103,14 @@ func assertStringEquals(name string, expected string, actual string) *AssertResu
 		return NewFailureAssertResult(name, fmt.Sprintf("%s is not same as expected value.", name), expected, actual)
 	} else {
 		return NewSuccessAssertResult(name)
+	}
+}
+
+func assertScoreThreshold(expect float64, actual float64) *AssertResult {
+	if actual < expect {
+		return NewFailureAssertResult("score", "The score dips below the expected value.", fmt.Sprintf("%f", expect), fmt.Sprintf("%f", actual))
+	} else {
+		return NewSuccessAssertResult("score")
 	}
 }
 
