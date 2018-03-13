@@ -14,12 +14,16 @@ import (
 
 func Execute(def *config.Definition) (*Holder, error) {
 	results := list.New()
-	for _, test := range def.Tests {
+	for i, test := range def.Tests {
 		if def.Environment.Debug {
 			fmt.Printf("[Start] %s\n", test.CreatePrefix())
 		}
 
 		start := time.Now()
+
+		if i != 0 {
+			time.Sleep(time.Duration(def.Environment.SleepInterval) * time.Millisecond)
+		}
 
 		assertResults := list.New()
 
