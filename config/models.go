@@ -16,6 +16,7 @@ type Definition struct {
 type Environment struct {
 	Debug bool
 	RetryCount int
+	SleepInterval int
 }
 
 type Test struct {

@@ -33,6 +33,10 @@ func main() {
 					Name:  "retry, r",
 					Usage: "The count of retrying",
 				},
+				cli.IntFlag{
+					Name: "sleep, s",
+					Usage: "Suspend test for an interval of time (ms)",
+				},
 			},
 			ArgsUsage: "[configuration file] A configuration YAML file which has conditions and expected query results",
 			Action: func(c *cli.Context) error {
@@ -63,6 +67,13 @@ func main() {
 				}
 				fmt.Printf("The count of retrying: %d\n", c.Int("retry"))
 				(&def.Environment).RetryCount = retryCount
+
+				sleepInterval := c.Int("sleep")
+				if sleepInterval < 0 {
+					return cli.NewExitError(fmt.Sprint("[Error] The sleep interval must be positive"), 1)
+				}
+				fmt.Printf("The sleep interval per test: %d(ms)\n", c.Int("sleep"))
+				(&def.Environment).SleepInterval = sleepInterval
 
 				fmt.Println("Running query tests for Dialogflow.")
 				holder, err := check.Execute(def)

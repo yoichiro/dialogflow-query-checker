@@ -230,6 +230,16 @@ $ dialogflow-query-checker run --retry <RETRYING_COUNT> <CONFIGURATION_FILE_PATH
 
 When the Dialogflow returns a result status code which is not 200 and you set a positive value as the retry count, this tool will resend the same request to the Dialogflow.
 
+### Sleep Interval
+
+You can set the interval per test-case using `--sleep` or `-s` option as the following:
+
+```bash
+$ dialogflow-query-checker run --sleep 500 <CONFIGURATION_FILE_PATH>
+``` 
+
+The unit of the interval value is millisecond. For example, if you specify `--sleep 500`, this tool sleeps during 500ms per test-case.
+
 ## For developers
 
 You can build this tool by the following steps:
