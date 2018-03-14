@@ -27,7 +27,7 @@ func LoadConfigurationFile(path string) (*Definition, error) {
 }
 
 func loadConfiguration(buf []byte) (*Definition, error) {
-	def, err := parseFile(buf)
+	def, err := parseAsYaml(buf)
 	if err != nil {
 		return nil, err
 	}
@@ -41,14 +41,10 @@ func loadConfiguration(buf []byte) (*Definition, error) {
 }
 
 func loadFromFile(path string) ([]byte, error) {
-	buf, err := ioutil.ReadFile(path)
-	if err != nil {
-		return nil, err
-	}
-	return buf, nil
+	return ioutil.ReadFile(path)
 }
 
-func parseFile(buf []byte) (*Definition, error) {
+func parseAsYaml(buf []byte) (*Definition, error) {
 	var def Definition
 	err := yaml.Unmarshal(buf, &def)
 	if err != nil {
@@ -126,7 +122,7 @@ func determineDateMacro(def *Definition) {
 		condition := &def.Tests[i].Condition
 		condition.Query = evaluateDateMacro(condition.Query, def.DateMacroFormat)
 
-		traverseMapAndEvaluateDateMacro(&def.Tests[i].Expect.Parameters)
+		traverseMapAndEvaluateDateMacro(def.Tests[i].Expect.Parameters)
 
 		expect := &def.Tests[i].Expect
 		expect.Speech = evaluateDateMacro(expect.Speech, def.DateMacroFormat)
@@ -136,14 +132,14 @@ func determineDateMacro(def *Definition) {
 	}
 }
 
-func traverseMapAndEvaluateDateMacro(m *map[interface{}]interface{}) {
-	for key := range *m {
-		value := (*m)[key]
+func traverseMapAndEvaluateDateMacro(m map[interface{}]interface{}) {
+	for key := range m {
+		value := m[key]
 		if value != nil && reflect.TypeOf(value).String() == "string" {
-			(*m)[key] = evaluateDateMacro(value.(string), "2006-01-02")
+			m[key] = evaluateDateMacro(value.(string), "2006-01-02")
 		} else if value != nil && strings.HasPrefix(reflect.TypeOf(value).String(), "map") {
 			child := value.(map[interface{}]interface{})
-			traverseMapAndEvaluateDateMacro(&child)
+			traverseMapAndEvaluateDateMacro(child)
 		}
 	}
 }

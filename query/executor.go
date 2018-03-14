@@ -5,8 +5,9 @@ import (
 	"encoding/json"
 	"net/http"
 	"bytes"
-	"io/ioutil"
 	"fmt"
+	"io"
+	"os"
 )
 
 func Execute(test *config.Test, def *config.Definition) (*Response, error) {
@@ -37,17 +38,20 @@ func doExecute(test *config.Test, def *config.Definition) (*Response, error) {
 		fmt.Printf("<Response Status> %s\n", res.Status)
 	}
 
-	body, err := ioutil.ReadAll(res.Body)
-	if err != nil {
-		return nil, err
-	}
+	var reader io.Reader = res.Body
 
 	if def.Environment.Debug {
-		fmt.Printf("<Response body> %s\n", string(body))
+		fmt.Print("<Response body> ")
+		reader = io.TeeReader(reader, os.Stdout)
 	}
 
 	var response Response
-	err = json.Unmarshal(body, &response)
+	err = json.NewDecoder(reader).Decode(&response)
+
+	if def.Environment.Debug {
+		fmt.Println()
+	}
+
 	if err != nil {
 		return nil, err
 	}
