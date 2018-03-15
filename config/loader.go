@@ -135,7 +135,7 @@ func determineDateMacro(def *Definition) {
 func traverseMapAndEvaluateDateMacro(m map[interface{}]interface{}) {
 	for key := range m {
 		value := m[key]
-		if value != nil && reflect.TypeOf(value).String() == "string" {
+		if value != nil && reflect.TypeOf(value).Kind() == reflect.String {
 			m[key] = evaluateDateMacro(value.(string), "2006-01-02")
 		} else if value != nil && reflect.TypeOf(value).Kind() == reflect.Map {
 			child := value.(map[interface{}]interface{})
