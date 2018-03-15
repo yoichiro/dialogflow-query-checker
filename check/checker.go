@@ -79,7 +79,7 @@ func assertMapEquals(assertResults *list.List, name string, parent []string, exp
 func hasSameChildMap(key string, m map[string]interface{}) bool {
 	value := m[key]
 	if value != nil {
-		return strings.HasPrefix(reflect.TypeOf(value).String(), "map")
+		return reflect.TypeOf(value).Kind() == reflect.Map
 	} else {
 		return false
 	}

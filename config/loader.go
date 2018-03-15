@@ -137,7 +137,7 @@ func traverseMapAndEvaluateDateMacro(m map[interface{}]interface{}) {
 		value := m[key]
 		if value != nil && reflect.TypeOf(value).String() == "string" {
 			m[key] = evaluateDateMacro(value.(string), "2006-01-02")
-		} else if value != nil && strings.HasPrefix(reflect.TypeOf(value).String(), "map") {
+		} else if value != nil && reflect.TypeOf(value).Kind() == reflect.Map {
 			child := value.(map[interface{}]interface{})
 			traverseMapAndEvaluateDateMacro(child)
 		}
