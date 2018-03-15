@@ -21,6 +21,9 @@ func TestDetermineDateMacro(t *testing.T) {
 					Parameters: map[interface{}]interface{}{
 						"key1": "start4${date.today}end4",
 						"key2": "start5${date.today}end5",
+						"key3": map[interface{}]interface{}{
+							"key4": "start6${date.today}end6",
+						},
 					},
 				},
 			},
@@ -43,5 +46,8 @@ func TestDetermineDateMacro(t *testing.T) {
 	}
 	if test.Expect.Parameters["key2"] != "start5" + date + "end5" {
 		t.Fatalf("test.Expect.Parameters[\"key2\"] is not expected value: %s", test.Expect.Parameters["key2"])
+	}
+	if test.Expect.Parameters["key3"].(map[interface{}]interface{})["key4"] != "start6" + date + "end6" {
+		t.Fatalf("test.Expect.Parameters[\"key3\"][\"key4\"] is not expected value: %s", test.Expect.Parameters["key3"].(map[interface{}]interface{})["key4"])
 	}
 }
