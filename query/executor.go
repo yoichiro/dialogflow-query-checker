@@ -76,6 +76,7 @@ func send(test *config.Test, def *config.Definition) (*http.Response, error) {
 	if test.Condition.ServiceAccessToken != "" {
 		requestBody.OriginalRequest.Data.User.AccessToken = test.Condition.ServiceAccessToken
 	}
+	requestBody.OriginalRequest.Data.User.UserStorage = "{\"data\":{}}"
 
 	body, err := json.MarshalIndent(&requestBody, "", "  ")
 	if err != nil {
